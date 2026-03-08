@@ -1,0 +1,36 @@
+# AWS
+.aws/
+*.pem
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.tmp
+*.bak
+
+# Function directory - exclude unpacked packages
+function/python/
+function/package/
+function/bin/
+function/*-*.dist-info/
+function/certifi/
+function/charset_normalizer/
+function/idna/
+function/requests/
+function/urllib3/
+function/my_deployment_package.zip

@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'EventBridge Rule to forward AWS Personal Health Dashboard events to central bus'
+
+Parameters:
+  PhDEventBusArn:
+    Type: String
+    Description: 'ARN of the target PhDEventBus (can be in same or different account)'
+    AllowedPattern: '^arn:aws-cn:events:[a-z0-9-]+:\d{12}:event-bus/[a-zA-Z0-9_-]+$'
+    ConstraintDescription: 'Must be a valid EventBus ARN in China regions'
+
+Resources:
+  PhDPushRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: events.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: PutEventsToTargetBus
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: 'events:PutEvents'
+                Resource: !Ref PhDEventBusArn
+
+  PhDPushRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: PhDPush
+      EventBusName: default
+      EventPattern:
+        source:
+          - aws.health
+          - self.test.aws.health
+        detail-type:
+          - AWS Health Event
+      State: ENABLED
+      Targets:
+        - Arn: !Ref PhDEventBusArn
+          Id: PhDEventBusTarget
+          RoleArn: !GetAtt PhDPushRole.Arn
+
+Outputs:
+  PhDPushRuleArn:
+    Description: 'ARN of the PhDPush rule'
+    Value: !GetAtt PhDPushRule.Arn
+  
+  PhDPushRoleArn:
+    Description: 'ARN of the IAM role used by PhDPush rule'
+    Value: !GetAtt PhDPushRole.Arn
+  
+  TargetEventBusArn:
+    Description: 'Target EventBus ARN'
+    Value: !Ref PhDEventBusArn
