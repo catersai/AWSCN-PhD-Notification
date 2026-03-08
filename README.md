@@ -4,6 +4,12 @@
 
 本项目实现AWS中国区多账号Personal Health Dashboard (PHD)事件的集中通知方案，支持将多个AWS账号的健康事件统一推送到飞书、钉钉、Teams、企业微信、Slack等即时通讯平台。
 
+## 架构图
+
+![架构图](./ARCHITECTURE.md)
+
+详细架构说明请查看 [ARCHITECTURE.md](./ARCHITECTURE.md)
+
 ## 设计思路
 
 ### 架构模式
