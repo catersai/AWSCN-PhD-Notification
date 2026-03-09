@@ -1,4 +1,4 @@
-# AWS中国区Personal Health Dashboard集中通知方案 - 架构图
+# AWS中国区Personal Health Dashboard集中IM通知方案 - 架构图
 
 ## 架构概览
 

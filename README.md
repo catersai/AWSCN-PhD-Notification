@@ -1,8 +1,10 @@
-# AWS中国区Personal Health Dashboard集中通知方案
+# AWS中国区Personal Health Dashboard集中IM通知方案
 
 ## 项目概述
 
 本项目实现AWS中国区多账号Personal Health Dashboard (PHD)事件的集中通知方案，支持将多个AWS账号的健康事件统一推送到飞书、钉钉、Teams、企业微信、Slack等即时通讯平台。
+
+**背景说明：** AWS中国区不支持Health的Organizational View功能（[官方文档](https://docs.amazonaws.cn/en_us/aws/latest/userguide/health.html)），无法在组织层面集中查看所有成员账号的健康事件。本方案通过EventBridge事件转发机制，实现了类似Organizational View的集中监控能力，解决了多账号健康事件分散管理的痛点。
 
 ## 架构图
 
@@ -50,8 +52,14 @@ PhD/
 ### 前置准备
 
 1. **获取Webhook地址**
-   - 在目标通讯平台创建机器人/Webhook
-   - 记录Webhook URL
+   
+   在目标通讯平台创建机器人/Webhook并记录Webhook URL：
+   
+   - **飞书** - [在群组中使用机器人](https://www.feishu.cn/hc/zh-CN/articles/360024984973-%E5%9C%A8%E7%BE%A4%E7%BB%84%E4%B8%AD%E4%BD%BF%E7%94%A8%E6%9C%BA%E5%99%A8%E4%BA%BA)
+   - **钉钉** - [自定义机器人接入](https://open.dingtalk.com/document/group/custom-robot-access)
+   - **Teams** - [Create incoming webhooks with Workflows for Microsoft Teams](https://support.microsoft.com/en-us/office/create-incoming-webhooks-with-workflows-for-microsoft-teams-8ae491c7-0394-4861-ba59-055e33f75498)
+   - **企业微信** - [消息推送](https://developer.work.weixin.qq.com/document/path/99110)
+   - **Slack** - [Sending messages using incoming webhooks](https://docs.slack.dev/messaging/sending-messages-using-incoming-webhooks/)
 
 2. **创建Lambda Layer包**（本地操作）
 
