@@ -4,47 +4,47 @@
 
 ```mermaid
 graph TB
-    subgraph "推送账号 1 (Spoke)"
-        PHD1[AWS Health<br/>Personal Health Dashboard]
-        EB1[EventBridge<br/>Default Bus]
-        Rule1[EventBridge Rule<br/>PhDPush]
+    subgraph Spoke1["推送账号 1 (Spoke)"]
+        PHD1["AWS Health"]
+        EB1["EventBridge Default Bus"]
+        Rule1["EventBridge Rule: PhDPush"]
         PHD1 -->|Health Events| EB1
         EB1 -->|匹配规则| Rule1
     end
 
-    subgraph "推送账号 2 (Spoke)"
-        PHD2[AWS Health<br/>Personal Health Dashboard]
-        EB2[EventBridge<br/>Default Bus]
-        Rule2[EventBridge Rule<br/>PhDPush]
+    subgraph Spoke2["推送账号 2 (Spoke)"]
+        PHD2["AWS Health"]
+        EB2["EventBridge Default Bus"]
+        Rule2["EventBridge Rule: PhDPush"]
         PHD2 -->|Health Events| EB2
         EB2 -->|匹配规则| Rule2
     end
 
-    subgraph "推送账号 N (Spoke)"
-        PHD3[AWS Health<br/>Personal Health Dashboard]
-        EB3[EventBridge<br/>Default Bus]
-        Rule3[EventBridge Rule<br/>PhDPush]
+    subgraph SpokeN["推送账号 N (Spoke)"]
+        PHD3["AWS Health"]
+        EB3["EventBridge Default Bus"]
+        Rule3["EventBridge Rule: PhDPush"]
         PHD3 -->|Health Events| EB3
         EB3 -->|匹配规则| Rule3
     end
 
-    subgraph "集中通知账号 (Hub)"
-        CEB[EventBridge<br/>Custom Bus<br/>PhDEventBus]
-        CRule[EventBridge Rule<br/>PhDEventRule<br/>+ InputTransformer]
-        Lambda[Lambda Function<br/>PhDNotifyLambda]
-        Layer[Lambda Layer<br/>requests-python314]
-        
+    subgraph Hub["集中通知账号 (Hub)"]
+        CEB["EventBridge Custom Bus: PhDEventBus"]
+        CRule["EventBridge Rule + InputTransformer"]
+        Lambda["Lambda: PhDNotifyLambda"]
+        Layer["Lambda Layer: requests-python314"]
+
         CEB -->|匹配规则| CRule
         CRule -->|触发| Lambda
         Layer -.->|依赖| Lambda
     end
 
-    subgraph "通讯平台"
-        Feishu[飞书<br/>Feishu]
-        DingTalk[钉钉<br/>DingTalk]
-        Teams[Teams]
-        WeCom[企业微信<br/>WeCom]
-        Slack[Slack]
+    subgraph IM["通讯平台"]
+        Feishu["飞书"]
+        DingTalk["钉钉"]
+        Teams["Teams"]
+        WeCom["企业微信"]
+        Slack["Slack"]
     end
 
     Rule1 -->|跨账号转发| CEB
@@ -57,17 +57,17 @@ graph TB
     Lambda -->|Webhook| WeCom
     Lambda -->|Webhook| Slack
 
-    style PHD1 fill:#FF9900
-    style PHD2 fill:#FF9900
-    style PHD3 fill:#FF9900
-    style CEB fill:#FF6B6B
-    style Lambda fill:#4CAF50
-    style Layer fill:#2196F3
-    style Feishu fill:#00D6B9
-    style DingTalk fill:#0089FF
-    style Teams fill:#5B5FC7
-    style WeCom fill:#07C160
-    style Slack fill:#4A154B
+    style PHD1 fill:#FF9900,color:#fff
+    style PHD2 fill:#FF9900,color:#fff
+    style PHD3 fill:#FF9900,color:#fff
+    style CEB fill:#FF6B6B,color:#fff
+    style Lambda fill:#4CAF50,color:#fff
+    style Layer fill:#2196F3,color:#fff
+    style Feishu fill:#00D6B9,color:#fff
+    style DingTalk fill:#0089FF,color:#fff
+    style Teams fill:#5B5FC7,color:#fff
+    style WeCom fill:#07C160,color:#fff
+    style Slack fill:#4A154B,color:#fff
 ```
 
 ## 事件流程
@@ -83,7 +83,7 @@ sequenceDiagram
     PHD->>Spoke: 1. 产生Health事件
     Spoke->>Spoke: 2. 规则匹配 (aws.health)
     Spoke->>Hub: 3. 跨账号转发事件
-    Hub->>Hub: 4. 规则匹配
+    Hub->>Hub: 4. 规则匹配 + InputTransformer格式化
     Hub->>Lambda: 5. 触发Lambda（已格式化的消息）
     Lambda->>Lambda: 6. 识别Webhook URL
     Lambda->>Lambda: 7. 构造平台特定格式
