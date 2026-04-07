@@ -244,7 +244,19 @@ WEBHOOK_URLS = os.environ.get('WEBHOOK_URLS', '').split(',')
 ```
 
 ### 自定义消息格式
-修改`lambda_function.py`中的`message_content`变量，自定义消息模板。
+消息格式通过`CNPhDCentral.yaml`中EventBridge Rule的`InputTransformer`配置，Lambda仅负责发送。修改`PhDEventRule`的`InputPathsMap`和`InputTemplate`即可自定义通知内容，无需修改Lambda代码：
+```yaml
+InputTransformer:
+  InputPathsMap:
+    account: "$.account"
+    region: "$.region"
+    service: "$.detail.service"
+    eventTypeCode: "$.detail.eventTypeCode"
+    startTime: "$.detail.startTime"
+    description: "$.detail.eventDescription[0].latestDescription"
+  InputTemplate: |
+    "【AWS Health 事件通知】\n账号: <account>\n区域: <region>\n服务: <service>\n事件类型: <eventTypeCode>\n开始时间: <startTime>\n事件描述: <description>"
+```
 
 ### 添加过滤规则
 在`CNPhDPush.yaml`的`EventPattern`中添加过滤条件，例如仅监控特定服务：

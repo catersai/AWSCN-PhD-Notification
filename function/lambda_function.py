@@ -75,10 +75,7 @@ def send_notification(webhook_url, content):
         return False, {"error": str(e)}
 
 def lambda_handler(event, context):
-    formatted_event = json.dumps(event, indent=2, ensure_ascii=False)
-    message_content = f"""【AWS Health 事件通知】
-收到AWS Health Event事件，详细内容如下：
-{formatted_event}"""
+    message_content = event if isinstance(event, str) else json.dumps(event, indent=2, ensure_ascii=False)
     
     if not WEBHOOK_URL:
         logger.error("未配置WEBHOOK_URL环境变量")

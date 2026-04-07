@@ -30,7 +30,7 @@ graph TB
 
     subgraph "集中通知账号 (Hub)"
         CEB[EventBridge<br/>Custom Bus<br/>PhDEventBus]
-        CRule[EventBridge Rule<br/>PhDEventRule]
+        CRule[EventBridge Rule<br/>PhDEventRule<br/>+ InputTransformer]
         Lambda[Lambda Function<br/>PhDNotifyLambda]
         Layer[Lambda Layer<br/>requests-python314]
         
@@ -84,7 +84,7 @@ sequenceDiagram
     Spoke->>Spoke: 2. 规则匹配 (aws.health)
     Spoke->>Hub: 3. 跨账号转发事件
     Hub->>Hub: 4. 规则匹配
-    Hub->>Lambda: 5. 触发Lambda
+    Hub->>Lambda: 5. 触发Lambda（已格式化的消息）
     Lambda->>Lambda: 6. 识别Webhook URL
     Lambda->>Lambda: 7. 构造平台特定格式
     Lambda->>IM: 8. 发送通知
@@ -101,8 +101,8 @@ sequenceDiagram
 
 ### 集中通知账号 (Hub)
 - **EventBridge Custom Bus**: 接收来自多个推送账号的事件
-- **EventBridge Rule**: 匹配事件并触发Lambda
-- **Lambda Function**: 处理事件并发送通知
+- **EventBridge Rule**: 匹配事件，通过InputTransformer格式化消息后触发Lambda
+- **Lambda Function**: 接收格式化消息并发送通知
 - **Lambda Layer**: 提供requests库依赖
 
 ### 通讯平台

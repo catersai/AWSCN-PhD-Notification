@@ -165,10 +165,7 @@ Resources:
                   return False, {"error": str(e)}
 
           def lambda_handler(event, context):
-              formatted_event = json.dumps(event, indent=2, ensure_ascii=False)
-              message_content = f"""【AWS Health 事件通知】
-          收到AWS Health Event事件，详细内容如下：
-          {formatted_event}"""
+              message_content = event if isinstance(event, str) else json.dumps(event, indent=2, ensure_ascii=False)
               if not WEBHOOK_URL:
                   logger.error("未配置WEBHOOK_URL环境变量")
                   return {'statusCode': 500, 'body': json.dumps({"error": "未配置WEBHOOK_URL"})}
@@ -197,6 +194,16 @@ Resources:
       Targets:
         - Arn: !GetAtt PhDNotifyLambda.Arn
           Id: PhDNotifyLambdaTarget
+          InputTransformer:
+            InputPathsMap:
+              account: "$.account"
+              region: "$.region"
+              service: "$.detail.service"
+              eventTypeCode: "$.detail.eventTypeCode"
+              startTime: "$.detail.startTime"
+              description: "$.detail.eventDescription[0].latestDescription"
+            InputTemplate: |
+              "【AWS Health 事件通知】\n账号: <account>\n区域: <region>\n服务: <service>\n事件类型: <eventTypeCode>\n开始时间: <startTime>\n事件描述: <description>"
 
 Outputs:
   PhDEventBusArn:
